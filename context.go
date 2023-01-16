@@ -11,6 +11,7 @@ package x
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/goantor/logs"
 )
 
 type Roboter interface {
@@ -18,14 +19,14 @@ type Roboter interface {
 }
 
 type Context interface {
-	Logger
+	logs.Logger
 	//Initialize(ctx interface{})
 	Set(key string, value interface{})
 	Get(key string, def interface{}) interface{}
 }
 
 type GinContext struct {
-	Logger
+	logs.Logger
 	ctx *gin.Context
 }
 
