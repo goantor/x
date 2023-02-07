@@ -42,6 +42,6 @@ func (g GinContext) Get(key string, def interface{}) interface{} {
 	return def
 }
 
-func NewContextWithGin(ctx *gin.Context, log Logger) Context {
+func NewContextWithGin(ctx *gin.Context, log logs.Logger) Context {
 	return &GinContext{ctx: ctx, Logger: log}
 }
