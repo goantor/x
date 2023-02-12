@@ -17,6 +17,7 @@ require (
 	github.com/goantor/ex v0.0.2 // indirect
 	github.com/goantor/pr v0.0.1 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
