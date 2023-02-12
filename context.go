@@ -45,21 +45,3 @@ func (g GinContext) Get(key string, def interface{}) interface{} {
 func NewContextWithGin(ctx *gin.Context, log logs.Logger) Context {
 	return &GinContext{ctx: ctx, Logger: log}
 }
-
-type TODOContext struct {
-	logs.Logger
-}
-
-func NewTODOContext() *TODOContext {
-	return &TODOContext{}
-}
-
-func (T TODOContext) Set(key string, value interface{}) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (T TODOContext) Get(key string, def interface{}) interface{} {
-	//TODO implement me
-	panic("implement me")
-}
