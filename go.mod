@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/fatih/color v1.14.1
 	github.com/gin-gonic/gin v1.8.2
-	github.com/goantor/logs v0.0.3
+	github.com/goantor/logs v0.0.4
 	github.com/json-iterator/go v1.1.12
 )
 

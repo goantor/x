@@ -26,6 +26,8 @@ github.com/goantor/logs v0.0.0-20230111073202-81a69554000a h1:YVSuYpt/+s817fO0HD
 github.com/goantor/logs v0.0.0-20230111073202-81a69554000a/go.mod h1:4qAESXZKRFlz9yWSzHh10ohh1LNM8lSsrjfqmOnWZG8=
 github.com/goantor/logs v0.0.3 h1:Ruzf2kbNp4LvEPVGlpXXxxz4u6SvkRU9tBY5LtUuDmU=
 github.com/goantor/logs v0.0.3/go.mod h1:DzhXl2pbkXqScMjmNj94WZRGXgY8b/zsKLVkv0fS7rw=
+github.com/goantor/logs v0.0.4 h1:l3S5UcMj8xCKiKQriEGiHiaylDe0+n7cEFaNivqaGWo=
+github.com/goantor/logs v0.0.4/go.mod h1:bk/HM+pLzb/Se9Y7azl1bfV3w1z/KNMEJ4zkOdjh4Iw=
 github.com/goantor/pr v0.0.1 h1:ehDJA/tuBJ3p2HifxNX5fk3tZE7v2z6tFnO6xUm6d2g=
 github.com/goantor/pr v0.0.1/go.mod h1:byBzG6cpQNZdDvdrNnx617VhwNvMoTFQxeP9qGInAQo=
 github.com/goccy/go-json v0.9.11 h1:/pAaQDLHEoCq/5FFmSKBswWmK6H0e8g4159Kc/X/nqk=
