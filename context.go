@@ -42,6 +42,14 @@ func (g GinContext) Get(key string, def interface{}) interface{} {
 	return def
 }
 
+func (g GinContext) Response(code int, h gin.H) {
+	if g.ctx.Writer.Written() {
+		return
+	}
+
+	g.ctx.AbortWithStatusJSON(code, h)
+}
+
 func NewContextWithGin(ctx *gin.Context, log logs.Logger) Context {
 	return &GinContext{ctx: ctx, Logger: log}
 }
