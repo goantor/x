@@ -20,9 +20,9 @@ type Roboter interface {
 
 type Context interface {
 	logs.Logger
-	//Initialize(ctx interface{})
 	Set(key string, value interface{})
 	Get(key string, def interface{}) interface{}
+	Response(code int, h H)
 }
 
 type GinContext struct {
@@ -42,7 +42,7 @@ func (g GinContext) Get(key string, def interface{}) interface{} {
 	return def
 }
 
-func (g GinContext) Response(code int, h gin.H) {
+func (g GinContext) Response(code int, h H) {
 	if g.ctx.Writer.Written() {
 		return
 	}
