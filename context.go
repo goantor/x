@@ -24,6 +24,8 @@ type Context interface {
 	logs.Logger
 	Set(key string, value interface{})
 	Get(key string, def interface{}) interface{}
+	Context() context.Context
+	Timeout(duration time.Duration) (ctx context.Context, cancel context.CancelFunc)
 	Response(code int, h H)
 }
 
@@ -63,4 +65,8 @@ func (g GinContext) Response(code int, h H) {
 
 func NewContextWithGin(ctx *gin.Context, log logs.Logger) Context {
 	return &GinContext{gtx: ctx, Logger: log, ctx: context.Background()}
+}
+
+func NewContext(log logs.Logger) Context {
+	return &GinContext{Logger: log, ctx: context.Background()}
 }
