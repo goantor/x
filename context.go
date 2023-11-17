@@ -10,8 +10,10 @@ package x
 */
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/goantor/logs"
+	"time"
 )
 
 type Roboter interface {
@@ -27,29 +29,38 @@ type Context interface {
 
 type GinContext struct {
 	logs.Logger
-	ctx *gin.Context
+	gtx *gin.Context
+	ctx context.Context
 }
 
 func (g GinContext) Set(key string, value interface{}) {
-	g.ctx.Set(key, value)
+	g.gtx.Set(key, value)
 }
 
 func (g GinContext) Get(key string, def interface{}) interface{} {
-	if value, exists := g.ctx.Get(key); exists {
+	if value, exists := g.gtx.Get(key); exists {
 		return value
 	}
 
 	return def
 }
 
+func (g GinContext) Context() context.Context {
+	return g.ctx
+}
+
+func (g GinContext) Timeout(duration time.Duration) (ctx context.Context, cancel context.CancelFunc) {
+	return context.WithTimeout(g.ctx, duration)
+}
+
 func (g GinContext) Response(code int, h H) {
-	if g.ctx.Writer.Written() {
+	if g.gtx.Writer.Written() {
 		return
 	}
 
-	g.ctx.AbortWithStatusJSON(code, h)
+	g.gtx.AbortWithStatusJSON(code, h)
 }
 
 func NewContextWithGin(ctx *gin.Context, log logs.Logger) Context {
-	return &GinContext{ctx: ctx, Logger: log}
+	return &GinContext{gtx: ctx, Logger: log, ctx: context.Background()}
 }
