@@ -25,7 +25,8 @@ type Context interface {
 	Set(key string, value interface{})
 	Get(key string, def interface{}) interface{}
 	Context() context.Context
-	Timeout(duration time.Duration) (ctx context.Context, cancel context.CancelFunc)
+	Timeout(duration time.Duration) (ctx Context, cancel context.CancelFunc)
+	Done() <-chan struct{}
 	Response(code int, h H)
 }
 
@@ -51,8 +52,14 @@ func (g GinContext) Context() context.Context {
 	return g.ctx
 }
 
-func (g GinContext) Timeout(duration time.Duration) (ctx context.Context, cancel context.CancelFunc) {
-	return context.WithTimeout(g.ctx, duration)
+func (g GinContext) Timeout(duration time.Duration) (ctx Context, cancel context.CancelFunc) {
+	ctx1, cancel := context.WithTimeout(g.ctx, duration)
+	ctx = NewContexts(g.Logger, ctx1)
+	return
+}
+
+func (g GinContext) Done() <-chan struct{} {
+	return g.ctx.Done()
 }
 
 func (g GinContext) Response(code int, h H) {
@@ -69,4 +76,8 @@ func NewContextWithGin(ctx *gin.Context, log logs.Logger) Context {
 
 func NewContext(log logs.Logger) Context {
 	return &GinContext{Logger: log, ctx: context.Background()}
+}
+
+func NewContexts(log logs.Logger, ctx context.Context) Context {
+	return &GinContext{Logger: log, ctx: ctx}
 }
