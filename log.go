@@ -13,6 +13,7 @@ type Roboter interface {
 type ILogger interface {
 	IContextData
 	TakeContextData() IContextData
+	GiveContextData(data IContextData)
 	WithRobot() ILogger
 	GiveRobot(robot Roboter) ILogger
 	Info(message string, data H)
@@ -36,6 +37,10 @@ type logger struct {
 	log      *logrus.Entry
 	robot    Roboter
 	useRobot bool
+}
+
+func (l *logger) GiveContextData(data IContextData) {
+	l.IContextData = data
 }
 
 func (l *logger) TakeContextData() IContextData {
