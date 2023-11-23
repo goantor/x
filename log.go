@@ -25,6 +25,13 @@ type ILogger interface {
 	Error(message string, err error, data H)
 }
 
+func NewLoggerWithData(log *logrus.Entry, data IContextData) ILogger {
+	return &logger{
+		log:          log,
+		IContextData: data,
+	}
+}
+
 func NewLogger(log *logrus.Entry) ILogger {
 	return &logger{
 		log:          log,
