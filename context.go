@@ -2,6 +2,9 @@ package x
 
 import (
 	"context"
+	"encoding/hex"
+	uuid "github.com/satori/go.uuid"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -23,9 +26,17 @@ type IContextData interface {
 	Get(key string, def interface{}) interface{}
 }
 
+func makeTraceId() string {
+	buf := make([]byte, 32)
+	u := uuid.NewV4().Bytes()
+	hex.Encode(buf, u)
+	return string(buf)
+}
+
 func NewContextData() IContextData {
 	return &ContextData{
-		Data: make(H),
+		Data:    make(H),
+		TraceId: makeTraceId(),
 	}
 }
 
@@ -118,21 +129,27 @@ type Context interface {
 
 func NewContext(log ILogger) Context {
 	return &defaultContext{
-		ctx:     context.Background(),
+		Context: context.Background(),
 		ILogger: log,
 	}
 }
 
+func NewContextWithLog(log *logrus.Logger) Context {
+	return NewContext(
+		NewLogger(log),
+	)
+}
+
 func ctxNewContext(ctx context.Context, log ILogger) Context {
 	return &defaultContext{
-		ctx:     ctx,
+		Context: ctx,
 		ILogger: log,
 	}
 }
 
 type defaultContext struct {
 	ILogger
-	ctx context.Context
+	context.Context
 }
 
 func (d defaultContext) TakeData() IContextData {
@@ -140,7 +157,7 @@ func (d defaultContext) TakeData() IContextData {
 }
 
 func (d defaultContext) AfterFunc(f func()) (stop func() bool) {
-	return context.AfterFunc(d.ctx, f)
+	return context.AfterFunc(d.Context, f)
 }
 
 func (d defaultContext) WithTimeout(timeout time.Duration) (ctx Context, cancel context.CancelFunc) {
@@ -148,7 +165,7 @@ func (d defaultContext) WithTimeout(timeout time.Duration) (ctx Context, cancel 
 		child context.Context
 	)
 
-	child, cancel = context.WithTimeout(d.ctx, timeout)
+	child, cancel = context.WithTimeout(d.Context, timeout)
 	return d.makeChildContext(child), cancel
 }
 
@@ -157,7 +174,7 @@ func (d defaultContext) WithTimeoutCause(timeout time.Duration, cause error) (ct
 		child context.Context
 	)
 
-	child, cancel = context.WithTimeoutCause(d.ctx, timeout, cause)
+	child, cancel = context.WithTimeoutCause(d.Context, timeout, cause)
 	return d.makeChildContext(child), cancel
 }
 
@@ -166,7 +183,7 @@ func (d defaultContext) WithCancel() (ctx Context, cancel context.CancelFunc) {
 		child context.Context
 	)
 
-	child, cancel = context.WithCancel(d.ctx)
+	child, cancel = context.WithCancel(d.Context)
 	return d.makeChildContext(child), cancel
 }
 
@@ -175,7 +192,7 @@ func (d defaultContext) WithCancelCause() (ctx Context, cancel context.CancelCau
 		child context.Context
 	)
 
-	child, cancel = context.WithCancelCause(d.ctx)
+	child, cancel = context.WithCancelCause(d.Context)
 	return d.makeChildContext(child), cancel
 }
 
@@ -188,7 +205,7 @@ func (d defaultContext) WithDeadline(deadline time.Time) (ctx Context, cancel co
 		child context.Context
 	)
 
-	child, cancel = context.WithDeadline(d.ctx, deadline)
+	child, cancel = context.WithDeadline(d.Context, deadline)
 
 	return d.makeChildContext(child), cancel
 }
@@ -198,6 +215,6 @@ func (d defaultContext) WithDeadlineCause(deadline time.Time, cause error) (ctx 
 		child context.Context
 	)
 
-	child, cancel = context.WithDeadlineCause(d.ctx, deadline, cause)
+	child, cancel = context.WithDeadlineCause(d.Context, deadline, cause)
 	return d.makeChildContext(child), cancel
 }
