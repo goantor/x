@@ -1,6 +1,7 @@
 package x
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
@@ -25,14 +26,14 @@ type ILogger interface {
 	Error(message string, err error, data H)
 }
 
-func NewLoggerWithData(log *logrus.Entry, data IContextData) ILogger {
+func NewLoggerWithData(log *logrus.Logger, data IContextData) ILogger {
 	return &logger{
 		log:          log,
 		IContextData: data,
 	}
 }
 
-func NewLogger(log *logrus.Entry) ILogger {
+func NewLogger(log *logrus.Logger) ILogger {
 	return &logger{
 		log:          log,
 		IContextData: NewContextData(),
@@ -41,7 +42,7 @@ func NewLogger(log *logrus.Entry) ILogger {
 
 type logger struct {
 	IContextData
-	log      *logrus.Entry
+	log      *logrus.Logger
 	robot    Roboter
 	useRobot bool
 }
@@ -77,6 +78,7 @@ func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	fields = make(logrus.Fields)
 	fields["data"] = data
 	fields["context"] = l.IContextData
+	fmt.Printf("%+v\n", fields)
 	return
 }
 
