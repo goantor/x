@@ -117,6 +117,7 @@ func (c *ContextData) Get(key string, def interface{}) interface{} {
 
 type Context interface {
 	ILogger
+	TakeContext() context.Context
 	TakeData() IContextData
 	AfterFunc(f func()) (stop func() bool)
 	WithTimeout(timeout time.Duration) (ctx Context, cancel context.CancelFunc)
@@ -150,6 +151,10 @@ func ctxNewContext(ctx context.Context, log ILogger) Context {
 type defaultContext struct {
 	ILogger
 	context.Context
+}
+
+func (d defaultContext) TakeContext() context.Context {
+	return d.Context
 }
 
 func (d defaultContext) TakeData() IContextData {
