@@ -49,7 +49,7 @@ type ContextData struct {
 	User      interface{} `json:"user,omitempty"`
 	Params    interface{} `json:"params,omitempty"`
 	IP        string      `json:"ip,omitempty"`
-	Data      H           `json:"data,omitempty"`
+	Data      H           `json:"-"`
 }
 
 func (c *ContextData) GiveService(service string) {

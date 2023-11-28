@@ -1,7 +1,6 @@
 package x
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
@@ -78,7 +77,6 @@ func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	fields = make(logrus.Fields)
 	fields["data"] = data
 	fields["context"] = l.IContextData
-	fmt.Printf("%+v\n", fields)
 	return
 }
 
