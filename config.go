@@ -37,15 +37,15 @@ func (c *defaultConfig) FlagFile(name string, value string, usage string) {
 	c.name = name
 }
 
-func (c *defaultConfig) parse() {
+func (c *defaultConfig) parse() error {
 	pflag.CommandLine.AddGoFlagSet(c.set)
 	pflag.Parse()
+	return viper.BindPFlags(pflag.CommandLine)
 }
 
 func (c *defaultConfig) Parse() (err error) {
-	c.parse()
-	if err = viper.BindPFlags(pflag.CommandLine); err != nil {
-		return
+	if c.path == "" {
+		return c.parse()
 	}
 
 	return c.readFile()
