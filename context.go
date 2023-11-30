@@ -3,6 +3,7 @@ package x
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"github.com/sirupsen/logrus"
 	"time"
@@ -24,6 +25,9 @@ type IContextData interface {
 	GiveIP(ip string)
 	Set(key string, value interface{})
 	Get(key string, def interface{}) interface{}
+	GiveMark(mark string)
+	TakeMark() string
+	CleanMark()
 }
 
 func makeTraceId() string {
@@ -48,8 +52,21 @@ type ContextData struct {
 	RequestId string      `json:"request_id,omitempty"`
 	User      interface{} `json:"user,omitempty"`
 	Params    interface{} `json:"params,omitempty"`
+	Mark      string      `json:"mark,omitempty"`
 	IP        string      `json:"ip,omitempty"`
 	Data      H           `json:"-"`
+}
+
+func (c *ContextData) GiveMark(mark string) {
+	c.Mark = fmt.Sprintf("__%s__", mark)
+}
+
+func (c *ContextData) TakeMark() string {
+	return c.Mark
+}
+
+func (c *ContextData) CleanMark() {
+	c.Mark = ""
 }
 
 func (c *ContextData) GiveService(service string) {
