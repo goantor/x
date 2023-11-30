@@ -40,11 +40,15 @@ func (c *defaultConfig) FlagFile(name string, value string, usage string) {
 func (c *defaultConfig) parse() error {
 	pflag.CommandLine.AddGoFlagSet(c.set)
 	pflag.Parse()
-	return viper.BindPFlags(pflag.CommandLine)
+	if err := viper.BindPFlags(pflag.CommandLine); err != nil {
+		return err
+	}
+
+	return c.readFile()
 }
 
 func (c *defaultConfig) Parse() (err error) {
-	if c.path == "" {
+	if !c.checkPath() {
 		return c.parse()
 	}
 
@@ -73,10 +77,12 @@ func (c *defaultConfig) makeConfigPath() (err error) {
 }
 
 func (c *defaultConfig) readFile() (err error) {
+	fmt.Println("do read")
 	if err = c.makeConfigPath(); err != nil {
 		return
 	}
 
+	fmt.Printf("path: %s\n", c.path)
 	viper.SetConfigFile(c.path)
 	return viper.ReadInConfig()
 }
