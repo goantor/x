@@ -42,7 +42,7 @@ func (r MaskReflect) withMaskValue(valueField reflect.Value) (value reflect.Valu
 
 	value = reflect.New(fieldType).Elem()
 	if !fieldType.Implements(reflect.TypeOf((*IMasker)(nil)).Elem()) {
-		return
+		return valueField
 	}
 
 	// 执行mask
