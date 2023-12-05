@@ -114,6 +114,48 @@ func (l *logger) Error(message string, err error, data H) {
 	go l.log.WithFields(fields).Error(message)
 }
 
+func (l *logger) makeMaskFields(data H) (fields logrus.Fields) {
+	fields = make(logrus.Fields)
+	masker := MaskReflect{}
+	fields["data"] = masker.MakeMask(data)
+	fields["context"] = l.IContextData
+	return
+}
+
+func (l *logger) doMaskLog(level logrus.Level, message string, data H) {
+	go l.log.WithFields(l.makeFields(data)).Log(level, message)
+}
+
+func (l *logger) MaskInfo(message string, data H) {
+	l.doMaskLog(logrus.InfoLevel, message, data)
+}
+
+func (l *logger) MaskTrace(message string, data H) {
+	l.doMaskLog(logrus.TraceLevel, message, data)
+}
+
+func (l *logger) MaskDebug(message string, data H) {
+	l.doMaskLog(logrus.DebugLevel, message, data)
+}
+
+func (l *logger) MaskWarn(message string, data H) {
+	l.doMaskLog(logrus.WarnLevel, message, data)
+}
+
+func (l *logger) MaskFatal(message string, data H) {
+	l.doMaskLog(logrus.FatalLevel, message, data)
+}
+
+func (l *logger) MaskPanic(message string, data H) {
+	l.doMaskLog(logrus.PanicLevel, message, data)
+}
+
+func (l *logger) MaskError(message string, err error, data H) {
+	fields := l.makeFields(data)
+	fields["error"] = err
+	go l.log.WithFields(fields).Error(message)
+}
+
 type ILogOption interface {
 	TakeStdout() bool
 	TakeHooks() []logrus.Hook

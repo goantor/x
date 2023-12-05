@@ -22,6 +22,7 @@ type IContextData interface {
 	GiveRequestId(id string)
 	GiveUser(user interface{})
 	GiveParams(params interface{})
+	GiveMaskParams(params interface{})
 	GiveIP(ip string)
 	Set(key string, value interface{})
 	Get(key string, def interface{}) interface{}
@@ -45,6 +46,7 @@ func NewContextData() IContextData {
 }
 
 type ContextData struct {
+	//UseMasker   bool		`json:UseMask`
 	Service   string      `json:"service,omitempty"`
 	Module    string      `json:"module,omitempty"`
 	Action    string      `json:"action,omitempty"`
@@ -115,6 +117,11 @@ func (c *ContextData) GiveUser(user interface{}) {
 
 func (c *ContextData) GiveParams(params interface{}) {
 	c.Params = params
+}
+
+func (c *ContextData) GiveMaskParams(params interface{}) {
+	masker := MaskReflect{}
+	c.Params = masker.MakeMask(params)
 }
 
 func (c *ContextData) GiveIP(ip string) {
