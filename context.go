@@ -20,7 +20,7 @@ type IContextData interface {
 	GiveTraceId(id string)
 	TakeRequestId() string
 	GiveRequestId(id string)
-	GiveUser(user interface{})
+	GiveRemind(key string, val interface{})
 	GiveParams(params interface{})
 	GiveMaskParams(params interface{})
 	GiveIP(ip string)
@@ -40,6 +40,7 @@ func makeTraceId() string {
 
 func NewContextData() IContextData {
 	return &ContextData{
+		Remind:  make(H),
 		Data:    make(H),
 		TraceId: makeTraceId(),
 	}
@@ -52,9 +53,9 @@ type ContextData struct {
 	Action    string      `json:"action,omitempty"`
 	TraceId   string      `json:"trace_id,omitempty"`
 	RequestId string      `json:"request_id,omitempty"`
-	User      interface{} `json:"user,omitempty"`
+	Remind    H           `json:"__Remind,omitempty"`
 	Params    interface{} `json:"params,omitempty"`
-	Mark      string      `json:"mark,omitempty"`
+	Mark      string      `json:"__MARK,omitempty"`
 	IP        string      `json:"ip,omitempty"`
 	Data      H           `json:"-"`
 }
@@ -111,8 +112,8 @@ func (c *ContextData) GiveTraceId(id string) {
 	c.TraceId = id
 }
 
-func (c *ContextData) GiveUser(user interface{}) {
-	c.User = user
+func (c *ContextData) GiveRemind(key string, val interface{}) {
+	c.Remind[key] = val
 }
 
 func (c *ContextData) GiveParams(params interface{}) {
