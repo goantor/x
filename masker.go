@@ -2,7 +2,11 @@ package x
 
 import (
 	"reflect"
+	"time"
 )
+
+// 特定的类型特殊转换
+var convertibleTypes = []reflect.Type{reflect.TypeOf(time.Time{})}
 
 type IMasker interface {
 	Mask() string
@@ -87,8 +91,16 @@ func (r MaskReflect) cloneValue(value reflect.Value) reflect.Value {
 }
 
 func (r MaskReflect) doStructMask(typer reflect.Type, val interface{}) reflect.Value {
+	var (
+		ok bool
+	)
+
 	value := reflect.ValueOf(val)
 	if value.IsZero() {
+		return value
+	}
+
+	if value, ok = r.takeConvertibleTypes(value); ok {
 		return value
 	}
 
@@ -162,6 +174,16 @@ func (r MaskReflect) doMappingMask(typer reflect.Type, val interface{}) reflect.
 	return clone
 }
 
+func (r MaskReflect) takeConvertibleTypes(value reflect.Value) (reflect.Value, bool) {
+	for _, t := range convertibleTypes {
+		if value.Type().ConvertibleTo(t) {
+			return value, true
+		}
+	}
+
+	return value, false
+}
+
 func (r MaskReflect) doMask(val interface{}) reflect.Value {
 	var (
 		typer reflect.Type
@@ -172,6 +194,7 @@ func (r MaskReflect) doMask(val interface{}) reflect.Value {
 
 	switch typer.Kind() {
 	case reflect.Struct:
+
 		return r.doStructMask(typer, val)
 
 	case reflect.Slice:
@@ -179,6 +202,7 @@ func (r MaskReflect) doMask(val interface{}) reflect.Value {
 
 	case reflect.Map:
 		return r.doMappingMask(typer, val)
+
 	case reflect.String:
 		return r.withMaskValue(reflect.ValueOf(val))
 	}
