@@ -53,9 +53,9 @@ type ContextData struct {
 	Action    string      `json:"action,omitempty"`
 	TraceId   string      `json:"trace_id,omitempty"`
 	RequestId string      `json:"request_id,omitempty"`
-	Remind    H           `json:"__Remind,omitempty"`
+	Remind    H           `json:"X_REMIND,omitempty"` // 这个始终标记不可以清除, 并且为大写，防止与其他数据冲突
 	Params    interface{} `json:"params,omitempty"`
-	Mark      string      `json:"__MARK,omitempty"`
+	Mark      string      `json:"X_MARK,omitempty"` // 小模块标记 可以清除
 	IP        string      `json:"ip,omitempty"`
 	Data      H           `json:"-"`
 }
@@ -113,7 +113,9 @@ func (c *ContextData) GiveTraceId(id string) {
 }
 
 func (c *ContextData) GiveRemind(key string, val interface{}) {
-	c.Remind[key] = val
+	if _, exists := c.Remind[key]; !exists {
+		c.Remind[key] = val
+	}
 }
 
 func (c *ContextData) GiveParams(params interface{}) {
