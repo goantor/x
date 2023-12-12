@@ -17,6 +17,14 @@ var (
 
 type H map[string]interface{}
 
+func (h H) Input(key string, def any) any {
+	if v, ok := h[key]; ok {
+		return v
+	}
+
+	return def
+}
+
 func DD(args ...interface{}) {
 	js, _ := json.Marshal(args)
 	color.Yellow("%s", js)
