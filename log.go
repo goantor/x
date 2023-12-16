@@ -129,6 +129,7 @@ type ILogOption interface {
 	TakeLevel() string
 	TakeFormatter() logrus.Formatter
 	TakeReportCaller() bool
+	ModifyName(name string)
 }
 
 func NewLogBuilder(opt ILogOption) *LogBuilder {
