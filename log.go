@@ -123,21 +123,22 @@ func (l *logger) Error(message string, err error, data H) {
 	go l.log.WithFields(fields).Error(message)
 }
 
-type ILogOption interface {
+type ILoggerOption interface {
 	TakeStdout() bool
 	TakeHooks() []logrus.Hook
 	TakeLevel() string
 	TakeFormatter() logrus.Formatter
 	TakeReportCaller() bool
 	ModifyName(name string)
+	Clone() ILoggerOption
 }
 
-func NewLogBuilder(opt ILogOption) *LogBuilder {
+func NewLogBuilder(opt ILoggerOption) *LogBuilder {
 	return &LogBuilder{opt: opt}
 }
 
 type LogBuilder struct {
-	opt ILogOption
+	opt ILoggerOption
 }
 
 func (b LogBuilder) makeHooks() (hooks logrus.LevelHooks) {
