@@ -105,5 +105,6 @@ func (c *defaultConfig) Get(key string) any {
 }
 
 func (c *defaultConfig) Bind(configs any) (err error) {
+
 	return viper.Unmarshal(&configs)
 }
