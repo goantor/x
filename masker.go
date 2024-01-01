@@ -1,7 +1,6 @@
 package x
 
 import (
-	"github.com/goantor/pr"
 	"reflect"
 	"time"
 )
@@ -66,7 +65,6 @@ func (r MaskReflect) withMaskValue(valueField reflect.Value) (value reflect.Valu
 
 func (r MaskReflect) recursiveHandle(value reflect.Value) reflect.Value {
 	if value.IsZero() {
-		pr.Yellow("value is zero: %+v\n", value)
 		return value
 	}
 
@@ -209,7 +207,6 @@ func (r MaskReflect) doMask(val interface{}) reflect.Value {
 		return r.doStructMask(typer, val)
 
 	case reflect.Slice:
-		pr.Yellow("val: %+v\n", val)
 		return r.doSliceMask(typer, val)
 
 	case reflect.Map:
