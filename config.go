@@ -77,12 +77,10 @@ func (c *defaultConfig) makeConfigPath() (err error) {
 }
 
 func (c *defaultConfig) readFile() (err error) {
-	fmt.Println("do read")
 	if err = c.makeConfigPath(); err != nil {
 		return
 	}
 
-	fmt.Printf("path: %s\n", c.path)
 	viper.SetConfigFile(c.path)
 	return viper.ReadInConfig()
 }
