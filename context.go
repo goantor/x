@@ -9,6 +9,12 @@ import (
 	"time"
 )
 
+type ILocker interface {
+	Locked(mark string) bool
+	Locking()
+	UnLock()
+}
+
 type IContextData interface {
 	GiveService(service string)
 	TakeService() string
@@ -144,6 +150,8 @@ func (c *ContextData) Get(key string, def interface{}) interface{} {
 
 type Context interface {
 	ILogger
+	ILocker
+	WithLocker(locker ILocker)
 	TakeContext() context.Context
 	TakeData() IContextData
 	AfterFunc(f func()) (stop func() bool)
@@ -177,22 +185,27 @@ func ctxNewContext(ctx context.Context, log ILogger) Context {
 
 type defaultContext struct {
 	ILogger
+	ILocker
 	context.Context
 }
 
-func (d defaultContext) TakeContext() context.Context {
+func (d *defaultContext) WithLocker(locker ILocker) {
+	d.ILocker = locker
+}
+
+func (d *defaultContext) TakeContext() context.Context {
 	return d.Context
 }
 
-func (d defaultContext) TakeData() IContextData {
+func (d *defaultContext) TakeData() IContextData {
 	return d.ILogger.TakeContextData()
 }
 
-func (d defaultContext) AfterFunc(f func()) (stop func() bool) {
+func (d *defaultContext) AfterFunc(f func()) (stop func() bool) {
 	return context.AfterFunc(d.Context, f)
 }
 
-func (d defaultContext) WithTimeout(timeout time.Duration) (ctx Context, cancel context.CancelFunc) {
+func (d *defaultContext) WithTimeout(timeout time.Duration) (ctx Context, cancel context.CancelFunc) {
 	var (
 		child context.Context
 	)
@@ -201,7 +214,7 @@ func (d defaultContext) WithTimeout(timeout time.Duration) (ctx Context, cancel 
 	return d.makeChildContext(child), cancel
 }
 
-func (d defaultContext) WithTimeoutCause(timeout time.Duration, cause error) (ctx Context, cancel context.CancelFunc) {
+func (d *defaultContext) WithTimeoutCause(timeout time.Duration, cause error) (ctx Context, cancel context.CancelFunc) {
 	var (
 		child context.Context
 	)
@@ -210,7 +223,7 @@ func (d defaultContext) WithTimeoutCause(timeout time.Duration, cause error) (ct
 	return d.makeChildContext(child), cancel
 }
 
-func (d defaultContext) WithCancel() (ctx Context, cancel context.CancelFunc) {
+func (d *defaultContext) WithCancel() (ctx Context, cancel context.CancelFunc) {
 	var (
 		child context.Context
 	)
@@ -219,7 +232,7 @@ func (d defaultContext) WithCancel() (ctx Context, cancel context.CancelFunc) {
 	return d.makeChildContext(child), cancel
 }
 
-func (d defaultContext) WithCancelCause() (ctx Context, cancel context.CancelCauseFunc) {
+func (d *defaultContext) WithCancelCause() (ctx Context, cancel context.CancelCauseFunc) {
 	var (
 		child context.Context
 	)
@@ -228,11 +241,11 @@ func (d defaultContext) WithCancelCause() (ctx Context, cancel context.CancelCau
 	return d.makeChildContext(child), cancel
 }
 
-func (d defaultContext) makeChildContext(child context.Context) (ctx Context) {
+func (d *defaultContext) makeChildContext(child context.Context) (ctx Context) {
 	return ctxNewContext(child, d.ILogger)
 }
 
-func (d defaultContext) WithDeadline(deadline time.Time) (ctx Context, cancel context.CancelFunc) {
+func (d *defaultContext) WithDeadline(deadline time.Time) (ctx Context, cancel context.CancelFunc) {
 	var (
 		child context.Context
 	)
@@ -242,7 +255,7 @@ func (d defaultContext) WithDeadline(deadline time.Time) (ctx Context, cancel co
 	return d.makeChildContext(child), cancel
 }
 
-func (d defaultContext) WithDeadlineCause(deadline time.Time, cause error) (ctx Context, cancel context.CancelFunc) {
+func (d *defaultContext) WithDeadlineCause(deadline time.Time, cause error) (ctx Context, cancel context.CancelFunc) {
 	var (
 		child context.Context
 	)
