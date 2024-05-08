@@ -10,7 +10,7 @@ import (
 )
 
 type ILocker interface {
-	Locked(mark string) bool
+	Locked(mark string, duration time.Duration) bool
 	Locking()
 	UnLock()
 }
