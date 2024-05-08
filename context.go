@@ -11,8 +11,7 @@ import (
 
 type ILocker interface {
 	Locked(mark string, duration time.Duration) bool
-	Locking()
-	UnLock()
+	UnLock(mark string) error
 }
 
 type IContextData interface {
