@@ -160,6 +160,12 @@ type Context interface {
 	WithCancelCause() (ctx Context, cancel context.CancelCauseFunc)
 	WithDeadline(deadline time.Time) (ctx Context, cancel context.CancelFunc)
 	WithDeadlineCause(deadline time.Time, cause error) (ctx Context, cancel context.CancelFunc)
+
+	// GiveRemoteRequestTimeout 设定远程请求超时时间
+	GiveRemoteRequestTimeout(timeout time.Duration)
+
+	// TakeRemoteRequestTimeout 获取远程请求超时时间
+	TakeRemoteRequestTimeout() time.Duration
 }
 
 func NewContext(log ILogger) Context {
@@ -186,6 +192,8 @@ type defaultContext struct {
 	ILogger
 	ILocker
 	context.Context
+
+	RemoteRequestTimeout time.Duration `json:"remote_request_timeout"` //
 }
 
 func (d *defaultContext) WithLocker(locker ILocker) {
@@ -261,4 +269,12 @@ func (d *defaultContext) WithDeadlineCause(deadline time.Time, cause error) (ctx
 
 	child, cancel = context.WithDeadlineCause(d.Context, deadline, cause)
 	return d.makeChildContext(child), cancel
+}
+
+func (d *defaultContext) GiveRemoteRequestTimeout(timeout time.Duration) {
+	d.RemoteRequestTimeout = timeout
+}
+
+func (d *defaultContext) TakeRemoteRequestTimeout() time.Duration {
+	return d.RemoteRequestTimeout
 }
