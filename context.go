@@ -165,7 +165,7 @@ type Context interface {
 	GiveRemoteRequestTimeout(timeout time.Duration)
 
 	// TakeRemoteRequestTimeout 获取远程请求超时时间
-	TakeRemoteRequestTimeout() time.Duration
+	TakeRemoteRequestTimeout(def time.Duration) time.Duration
 }
 
 func NewContext(log ILogger) Context {
@@ -275,6 +275,9 @@ func (d *defaultContext) GiveRemoteRequestTimeout(timeout time.Duration) {
 	d.RemoteRequestTimeout = timeout
 }
 
-func (d *defaultContext) TakeRemoteRequestTimeout() time.Duration {
+func (d *defaultContext) TakeRemoteRequestTimeout(def time.Duration) time.Duration {
+	if d.RemoteRequestTimeout == 0 {
+		return def
+	}
 	return d.RemoteRequestTimeout
 }
