@@ -84,13 +84,20 @@ func (l *logger) resetRobot() {
 
 func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	fields = make(logrus.Fields)
-	fields["data"] = l.takeMasker().MakeMask(data)
+	//fields["data"] = l.takeMasker().MakeMask(data)
+	var js []byte
+	if data == nil {
+		js = []byte("{}")
+	}
+
+	js, _ = json.Marshal(data)
+	fields["data"] = string(js)
 	fields["context"] = l.IContextData
 	return
 }
 
 func (l *logger) doLog(level logrus.Level, message string, data H) {
-	go l.log.WithFields(l.makeFields(data)).Log(level, message)
+	l.log.WithFields(l.makeFields(data)).Log(level, message)
 }
 
 func (l *logger) Info(message string, data H) {
