@@ -88,9 +88,10 @@ func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	var js []byte
 	if data == nil {
 		js = []byte("{}")
+	} else {
+		js, _ = json.Marshal(data)
 	}
 
-	js, _ = json.Marshal(data)
 	fields["data"] = string(js)
 	fields["context"] = l.IContextData
 	return
