@@ -98,7 +98,7 @@ func (l *logger) makeFields(data H) (fields logrus.Fields) {
 }
 
 func (l *logger) doLog(level logrus.Level, message string, data H) {
-	l.log.WithFields(l.makeFields(data)).Log(level, message)
+	go l.log.WithFields(l.makeFields(data)).Log(level, message)
 }
 
 func (l *logger) Info(message string, data H) {
