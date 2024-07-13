@@ -1,6 +1,7 @@
 package x
 
 import (
+	"github.com/goantor/x"
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
@@ -85,14 +86,11 @@ func (l *logger) resetRobot() {
 func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	fields = make(logrus.Fields)
 	//fields["data"] = l.takeMasker().MakeMask(data)
-	var js []byte
 	if data == nil {
-		js = []byte("{}")
-	} else {
-		js, _ = json.Marshal(data)
+		data = x.H{}
 	}
 
-	fields["data"] = string(js)
+	fields["data"] = data
 	fields["context"] = l.IContextData
 	return
 }
