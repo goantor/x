@@ -1,7 +1,6 @@
 package x
 
 import (
-	"github.com/goantor/x"
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
@@ -87,7 +86,7 @@ func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	fields = make(logrus.Fields)
 	//fields["data"] = l.takeMasker().MakeMask(data)
 	if data == nil {
-		data = x.H{}
+		data = H{}
 	}
 
 	fields["data"] = data
