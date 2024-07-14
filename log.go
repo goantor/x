@@ -84,7 +84,6 @@ func (l *logger) resetRobot() {
 
 func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	fields = make(logrus.Fields)
-	//fields["data"] = l.takeMasker().MakeMask(data)
 	if data != nil && len(data) > 0 {
 		fields["data"] = data
 	}
@@ -94,37 +93,52 @@ func (l *logger) makeFields(data H) (fields logrus.Fields) {
 }
 
 func (l *logger) doLog(level logrus.Level, message string, data H) {
-	go l.log.WithFields(l.makeFields(data)).Log(level, message)
+	defer func() {
+		if r := recover(); r != nil {
+			l.Error("log failed", nil, H{"error": r})
+		}
+	}()
+
+	l.log.WithFields(l.makeFields(data)).Log(level, message)
 }
 
 func (l *logger) Info(message string, data H) {
-	l.doLog(logrus.InfoLevel, message, data)
+	go l.doLog(logrus.InfoLevel, message, data)
 }
 
 func (l *logger) Trace(message string, data H) {
-	l.doLog(logrus.TraceLevel, message, data)
+	go l.doLog(logrus.TraceLevel, message, data)
 }
 
 func (l *logger) Debug(message string, data H) {
-	l.doLog(logrus.DebugLevel, message, data)
+	go l.doLog(logrus.DebugLevel, message, data)
 }
 
 func (l *logger) Warn(message string, data H) {
-	l.doLog(logrus.WarnLevel, message, data)
+	go l.doLog(logrus.WarnLevel, message, data)
 }
 
 func (l *logger) Fatal(message string, data H) {
-	l.doLog(logrus.FatalLevel, message, data)
+	go l.doLog(logrus.FatalLevel, message, data)
 }
 
 func (l *logger) Panic(message string, data H) {
-	l.doLog(logrus.PanicLevel, message, data)
+	go l.doLog(logrus.PanicLevel, message, data)
 }
 
-func (l *logger) Error(message string, err error, data H) {
+func (l *logger) doLogError(message string, err error, data H) {
+	defer func() {
+		if r := recover(); r != nil {
+			l.Error("log failed", nil, H{"error": r})
+		}
+	}()
+
 	fields := l.makeFields(data)
 	fields["error"] = err
-	go l.log.WithFields(fields).Error(message)
+	l.log.WithFields(fields).Error(message)
+}
+func (l *logger) Error(message string, err error, data H) {
+	go l.doLogError(message, err, data)
 }
 
 type ILoggerOption interface {
