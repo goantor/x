@@ -85,11 +85,10 @@ func (l *logger) resetRobot() {
 func (l *logger) makeFields(data H) (fields logrus.Fields) {
 	fields = make(logrus.Fields)
 	//fields["data"] = l.takeMasker().MakeMask(data)
-	if data == nil {
-		data = H{}
+	if data != nil && len(data) > 0 {
+		fields["data"] = data
 	}
 
-	fields["data"] = data
 	fields["context"] = l.IContextData
 	return
 }
