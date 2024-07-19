@@ -99,7 +99,7 @@ func (l *logger) doLog(level logrus.Level, message string, data H) {
 		}
 	}()
 
-	defer l.log.Writer().Close()
+	//defer l.log.Writer().Close()
 	l.log.WithFields(l.makeFields(data)).Log(level, message)
 }
 
@@ -134,7 +134,7 @@ func (l *logger) doLogError(message string, err error, data H) {
 		}
 	}()
 
-	defer l.log.Writer().Close()
+	//defer l.log.Writer().Close()
 	fields := l.makeFields(data)
 	fields["error"] = err
 	l.log.WithFields(fields).Error(message)
