@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
+	"runtime"
 )
 
 type Roboter interface {
@@ -95,7 +96,9 @@ func (l *logger) makeFields(data H) (fields logrus.Fields) {
 func (l *logger) doLog(level logrus.Level, message string, data H) {
 	defer func() {
 		if r := recover(); r != nil {
-			l.Error("log failed", nil, H{"error": r})
+			buf := make([]byte, 1024)
+			runtime.Stack(buf, false)
+			l.Error("log failed", nil, H{"error": r, "stack": string(buf)})
 		}
 	}()
 
