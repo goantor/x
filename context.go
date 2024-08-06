@@ -6,6 +6,7 @@ import (
 	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"github.com/sirupsen/logrus"
+	"sync"
 	"time"
 )
 
@@ -45,8 +46,8 @@ func makeTraceId() string {
 
 func NewContextData() IContextData {
 	return &ContextData{
-		Remind:  make(H),
-		Data:    make(H),
+		Remind:  sync.Map{},
+		Data:    sync.Map{},
 		TraceId: makeTraceId(),
 	}
 }
@@ -58,11 +59,11 @@ type ContextData struct {
 	Action    string      `json:"action,omitempty"`
 	TraceId   string      `json:"trace_id,omitempty"`
 	RequestId string      `json:"request_id,omitempty"`
-	Remind    H           `json:"X_REMIND,omitempty"` // 这个始终标记不可以清除, 并且为大写，防止与其他数据冲突
+	Remind    sync.Map    `json:"X_REMIND,omitempty"` // 这个始终标记不可以清除, 并且为大写，防止与其他数据冲突
 	Params    interface{} `json:"params,omitempty"`
 	Mark      string      `json:"X_MARK,omitempty"` // 小模块标记 可以清除
 	IP        string      `json:"ip,omitempty"`
-	Data      H           `json:"-"`
+	Data      sync.Map    `json:"-"`
 }
 
 func (c *ContextData) GiveMark(mark string) {
@@ -118,8 +119,8 @@ func (c *ContextData) GiveTraceId(id string) {
 }
 
 func (c *ContextData) GiveRemind(key string, val interface{}) {
-	if _, exists := c.Remind[key]; !exists {
-		c.Remind[key] = val
+	if _, exists := c.Remind.Load(key); !exists {
+		c.Remind.Store(key, val)
 	}
 }
 
@@ -137,11 +138,11 @@ func (c *ContextData) GiveIP(ip string) {
 }
 
 func (c *ContextData) Set(key string, value interface{}) {
-	c.Data[key] = value
+	c.Data.Store(key, value)
 }
 
 func (c *ContextData) Get(key string, def interface{}) interface{} {
-	if value, exists := c.Data[key]; exists {
+	if value, exists := c.Data.Load(key); exists {
 		return value
 	}
 	return def
