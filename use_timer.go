@@ -18,6 +18,5 @@ func (t *UseTimer) Record() {
 func (t *UseTimer) TakeUsed() time.Duration {
 	used := time.Now().Sub(t.Start)
 	t.Used += used
-	t.Start = time.Now()
 	return t.Used
 }
