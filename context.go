@@ -167,12 +167,17 @@ type Context interface {
 
 	// TakeRemoteRequestTimeout 获取远程请求超时时间
 	TakeRemoteRequestTimeout(def time.Duration) time.Duration
+
+	RecordTime()
+
+	TakeUsedTime() time.Duration
 }
 
 func NewContext(log ILogger) Context {
 	return &defaultContext{
-		Context: context.Background(),
-		ILogger: log,
+		Context:  context.Background(),
+		ILogger:  log,
+		UseTimer: NewUseTimer(),
 	}
 }
 
@@ -184,8 +189,9 @@ func NewContextWithLog(log *logrus.Logger) Context {
 
 func ctxNewContext(ctx context.Context, log ILogger) Context {
 	return &defaultContext{
-		Context: ctx,
-		ILogger: log,
+		Context:  ctx,
+		ILogger:  log,
+		UseTimer: NewUseTimer(),
 	}
 }
 
@@ -195,6 +201,7 @@ type defaultContext struct {
 	context.Context
 
 	RemoteRequestTimeout time.Duration `json:"remote_request_timeout"` //
+	UseTimer             *UseTimer
 }
 
 func (d *defaultContext) WithLocker(locker ILocker) {
@@ -281,4 +288,12 @@ func (d *defaultContext) TakeRemoteRequestTimeout(def time.Duration) time.Durati
 		return def
 	}
 	return d.RemoteRequestTimeout
+}
+
+func (d *defaultContext) RecordTime() {
+	d.UseTimer.Record()
+}
+
+func (d *defaultContext) TakeUsedTime() time.Duration {
+	return d.UseTimer.TakeUsed()
 }
