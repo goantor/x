@@ -28,6 +28,7 @@ type IContextData interface {
 	GiveRequestId(id string)
 	//GiveRemind(key string, val interface{})
 	GiveUserId(id int)
+	GivePlanId(id int)
 	GivePhoneMd5(md5 string)
 	GiveChannel(channel string)
 	GiveActive(active string)
@@ -64,6 +65,7 @@ type ContextData struct {
 	RequestId string      `json:"request_id,omitempty"`
 	Active    string      `json:"active,omitempty"`
 	UserId    int         `json:"user_id,omitempty"`
+	PlanId    int         `json:"plan_id,omitempty"`
 	PhoneMd5  string      `json:"phone_md5,omitempty"`
 	Channel   string      `json:"channel,omitempty"`
 	Params    interface{} `json:"params,omitempty"`
@@ -74,6 +76,10 @@ type ContextData struct {
 
 func (c *ContextData) GiveUserId(id int) {
 	c.UserId = id
+}
+
+func (c *ContextData) GivePlanId(id int) {
+	c.PlanId = id
 }
 
 func (c *ContextData) GivePhoneMd5(md5 string) {
