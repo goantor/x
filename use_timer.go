@@ -1,6 +1,8 @@
 package x
 
-import "time"
+import (
+	"time"
+)
 
 type UseTimer struct {
 	Start time.Time

@@ -26,7 +26,10 @@ type IContextData interface {
 	GiveTraceId(id string)
 	TakeRequestId() string
 	GiveRequestId(id string)
-	GiveRemind(key string, val interface{})
+	//GiveRemind(key string, val interface{})
+	GiveUserId(id int)
+	GivePhoneMd5(md5 string)
+	GiveChannel(channel string)
 	GiveParams(params interface{})
 	GiveMaskParams(params interface{})
 	GiveIP(ip string)
@@ -46,7 +49,6 @@ func makeTraceId() string {
 
 func NewContextData() IContextData {
 	return &ContextData{
-		Remind:  sync.Map{},
 		Data:    sync.Map{},
 		TraceId: makeTraceId(),
 	}
@@ -59,11 +61,25 @@ type ContextData struct {
 	Action    string      `json:"action,omitempty"`
 	TraceId   string      `json:"trace_id,omitempty"`
 	RequestId string      `json:"request_id,omitempty"`
-	Remind    sync.Map    `json:"X_REMIND,omitempty"` // 这个始终标记不可以清除, 并且为大写，防止与其他数据冲突
+	UserId    int         `json:"user_id,omitempty"`
+	PhoneMd5  string      `json:"phone_md5,omitempty"`
+	Channel   string      `json:"channel,omitempty"`
 	Params    interface{} `json:"params,omitempty"`
 	Mark      string      `json:"X_MARK,omitempty"` // 小模块标记 可以清除
 	IP        string      `json:"ip,omitempty"`
 	Data      sync.Map    `json:"-"`
+}
+
+func (c *ContextData) GiveUserId(id int) {
+	c.UserId = id
+}
+
+func (c *ContextData) GivePhoneMd5(md5 string) {
+	c.PhoneMd5 = md5
+}
+
+func (c *ContextData) GiveChannel(channel string) {
+	c.Channel = channel
 }
 
 func (c *ContextData) GiveMark(mark string) {
@@ -118,11 +134,11 @@ func (c *ContextData) GiveTraceId(id string) {
 	c.TraceId = id
 }
 
-func (c *ContextData) GiveRemind(key string, val interface{}) {
-	if _, exists := c.Remind.Load(key); !exists {
-		c.Remind.Store(key, val)
-	}
-}
+//func (c *ContextData) GiveRemind(key string, val interface{}) {
+//	c.mu.Lock()
+//	defer c.mu.Unlock()
+//	c.Remind[key] = val
+//}
 
 func (c *ContextData) GiveParams(params interface{}) {
 	c.Params = params
