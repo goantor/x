@@ -30,6 +30,7 @@ type IContextData interface {
 	GiveUserId(id int)
 	GivePhoneMd5(md5 string)
 	GiveChannel(channel string)
+	GiveActive(active string)
 	GiveParams(params interface{})
 	GiveMaskParams(params interface{})
 	GiveIP(ip string)
@@ -61,6 +62,7 @@ type ContextData struct {
 	Action    string      `json:"action,omitempty"`
 	TraceId   string      `json:"trace_id,omitempty"`
 	RequestId string      `json:"request_id,omitempty"`
+	Active    string      `json:"active,omitempty"`
 	UserId    int         `json:"user_id,omitempty"`
 	PhoneMd5  string      `json:"phone_md5,omitempty"`
 	Channel   string      `json:"channel,omitempty"`
@@ -80,6 +82,10 @@ func (c *ContextData) GivePhoneMd5(md5 string) {
 
 func (c *ContextData) GiveChannel(channel string) {
 	c.Channel = channel
+}
+
+func (c *ContextData) GiveActive(active string) {
+	c.Active = active
 }
 
 func (c *ContextData) GiveMark(mark string) {
