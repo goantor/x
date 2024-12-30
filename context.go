@@ -31,6 +31,7 @@ type IContextData interface {
 	GivePlanId(id int)
 	GivePhoneMd5(md5 string)
 	GiveChannel(channel string)
+	TakeActive() string
 	GiveActive(active string)
 	GiveParams(params interface{})
 	GiveMaskParams(params interface{})
@@ -92,6 +93,10 @@ func (c *ContextData) GiveChannel(channel string) {
 
 func (c *ContextData) GiveActive(active string) {
 	c.Active = active
+}
+
+func (c *ContextData) TakeActive() string {
+	return c.Active
 }
 
 func (c *ContextData) GiveMark(mark string) {
